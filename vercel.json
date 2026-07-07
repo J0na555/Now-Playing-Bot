@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/poll.ts": {
+      "maxDuration": 10
+    }
+  }
+}
