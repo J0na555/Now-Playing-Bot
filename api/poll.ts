@@ -2,17 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { parseNowPlayingSvg } from "../lib/svg-parser";
 import { editMessageMedia } from "../lib/telegram";
 
-// Required env vars (set these in Vercel project settings):
-// SPOTIFY_UID        - your uid from spotify-github-profile.kittinanx.com
-// TELEGRAM_BOT_TOKEN  - from @BotFather
-// TELEGRAM_CHAT_ID    - your channel's chat id (e.g. -100xxxxxxxxxx)
-// TELEGRAM_MESSAGE_ID - the message_id of the ONE pinned message you'll keep editing
-// CRON_SECRET         - optional shared secret to stop randoms from hitting your endpoint
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Optional but recommended: guard the endpoint so only Vercel Cron (or you) can
-  // trigger it. Vercel Cron sends this header automatically when CRON_SECRET is set
-  // as an env var and referenced in vercel.json.
   const cronSecret = process.env.CRON_SECRET;
   if (cronSecret) {
     const authHeader = req.headers["authorization"];
@@ -44,9 +34,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const nowPlaying = parseNowPlayingSvg(svgText);
 
     const caption = [
-      `🎵 *${nowPlaying.statusText}*`,
-      `*${nowPlaying.song}*`,
-      nowPlaying.artist,
+      `🎵 *${nowPlaying.song}*`,
+      `👤 ${nowPlaying.artist}`,
+      `🎧 ${nowPlaying.statusText}`,
     ].join("\n");
 
     await editMessageMedia({
