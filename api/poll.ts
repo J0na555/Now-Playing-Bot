@@ -34,10 +34,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const nowPlaying = parseNowPlayingSvg(svgText);
 
     const caption = [
-      `*${nowPlaying.song}*`,
-      `───`,
-      `👤 ${nowPlaying.artist}`,
-      `🎧 ${nowPlaying.statusText}`
+      `▶️ *${nowPlaying.song}* — \`${nowPlaying.artist}\``,
+      ` \`└── ${nowPlaying.statusText} ───\``
     ].join("\n");
 
     await editMessageMedia({
