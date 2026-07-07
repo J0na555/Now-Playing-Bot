@@ -35,7 +35,7 @@ export function parseNowPlayingSvg(svg: string): NowPlayingData {
 
   if (!song || !artist || !imageMatch) {
     throw new Error(
-      "Failed to parse now-playing SVG — expected fields not found. " +
+      "Failed to parse now-playing SVG - expected fields not found. " +
         "kittinan's markup may have changed."
     );
   }

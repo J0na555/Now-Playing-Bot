@@ -64,9 +64,10 @@ upgrade needed:
 
 1. Go to [UptimeRobot](https://uptimerobot.com) (free) and create an account.
 2. Add a new HTTP monitor:
-   - **URL:** `https://your-project.vercel.app/api/poll?secret=YOUR_CRON_SECRET`
+   - **URL:** `https://your-project.vercel.app/api/poll`
    - **Interval:** every 5 minutes
    - **Timeout:** 45 seconds
+   - **Headers (optional):** if you set `CRON_SECRET`, add `Authorization: Bearer YOUR_CRON_SECRET`
 3. Save and enable it.
 
 That's it  -  UptimeRobot will hit your endpoint every 5 minutes, your function
