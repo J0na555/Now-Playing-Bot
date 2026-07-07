@@ -37,7 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       `🎵 *${nowPlaying.song}*`,
       `👤 ${nowPlaying.artist}`,
       `🎧 ${nowPlaying.statusText}`,
-    ].join("\n");
+    ].join("\n\n");
 
     await editMessageMedia({
       botToken: TELEGRAM_BOT_TOKEN,
