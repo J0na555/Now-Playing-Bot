@@ -28,7 +28,7 @@ export async function editMessageMedia({
     type: "photo",
     media: `attach://${filename}`,
     caption,
-    parse_mode: "Markdown",
+    parse_mode: "HTML",
   };
 
   const form = new FormData();
@@ -36,8 +36,9 @@ export async function editMessageMedia({
   form.append("message_id", String(messageId));
   form.append("media", JSON.stringify(media));
 
-  // Node 18+ has global Blob/FormData — no extra deps needed.
-  const blob = new Blob([imageBuffer], { type: imageMimeType });
+  // Node 18+ has global Blob/FormData — no extra deps needed. Wrapping the
+  // Buffer in a Uint8Array keeps this compiling under TS 5.9's stricter BlobPart.
+  const blob = new Blob([new Uint8Array(imageBuffer)], { type: imageMimeType });
   form.append(filename, blob, filename);
 
   const response = await fetch(url, {
