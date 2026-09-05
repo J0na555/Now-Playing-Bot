@@ -8,5 +8,8 @@
   "devDependencies": {
     "@vercel/node": "^3.0.0",
     "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.38.4"
   }
 }
