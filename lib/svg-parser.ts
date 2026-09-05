@@ -6,6 +6,7 @@ export interface NowPlayingData {
   song: string;
   artist: string;
   statusText: string; // e.g. "Now playing" — cosmetic, comes straight from the widget
+  progressTime: string | null; // current time from the widget's progress bar, e.g. "1:23"
   imageBuffer: Buffer;
   imageMimeType: string; // e.g. "image/jpeg"
 }
@@ -29,6 +30,14 @@ export function parseNowPlayingSvg(svg: string): NowPlayingData {
   const artist = extractFirstGroup(svg, /<div class="artist-name">([^<]*)<\/div>/);
   const statusText = extractFirstGroup(svg, /<span class="status-text">([^<]*)<\/span>/);
 
+  // First <span> inside .progress-times is the current time (the second is the
+  // remaining duration). Idle renders "0:00" — still captured, only meaningful
+  // while status-text says "Now playing".
+  const progressTime = extractFirstGroup(
+    svg,
+    /<div class="progress-times">\s*<span>([^<]*)<\/span>/
+  );
+
   const imageMatch = svg.match(
     /<img class="album-cover" src="data:(image\/[a-zA-Z]+);base64,([^"]+)"/
   );
@@ -48,6 +57,7 @@ export function parseNowPlayingSvg(svg: string): NowPlayingData {
     song,
     artist,
     statusText: statusText ?? "Now Playing",
+    progressTime,
     imageBuffer,
     imageMimeType,
   };
