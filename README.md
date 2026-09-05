@@ -75,6 +75,27 @@ a 60s heartbeat so long videos keep refreshing the server-side timestamp).
 Pushes are failures-tolerant by design: the bot treats stale state as "not
 watching" and falls back to Spotify.
 
+#### Firefox install
+
+The same `extension/` folder works in Firefox as a temporary add-on:
+
+1. Open `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on…** and select `extension/manifest.json`.
+
+No second config: Firefox loads the same `config.js`, so whatever `PUSH_URL` and
+`PUSH_SECRET` you already set for Chrome apply here too.
+
+Honest caveat: a temporary add-on unloads when Firefox restarts, so re-load it to
+resume. If that gets annoying, the follow-up is signing the add-on via AMO
+(unlisted self-distribution), which isn't built here.
+
+Degradation is graceful: after a restart the YouTube state ages out in ~3 minutes
+and the card falls back to your last Spotify card until the extension is
+re-loaded.
+
+Troubleshooting: if YouTube cards stop appearing in Firefox unexpectedly, check
+`about:debugging` that the add-on is still loaded (a restart unloads it).
+
 ### 5. Deploy
 
 ```bash
