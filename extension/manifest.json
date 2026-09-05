@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Now Playing — YouTube Watch State",
+  "version": "0.1.0",
+  "description": "Pushes the current YouTube watch state to the now-playing bot's /api/push endpoint. No backend, no service worker — just a content script that watches the page.",
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["config.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
