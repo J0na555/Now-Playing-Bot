@@ -55,7 +55,7 @@ under your Vercel project's **Settings → Environment Variables**:
 | `PUSH_SECRET` | yes (v2) | Random string, shared with the extension; keep it SEPARATE from `CRON_SECRET` |
 | `YT_FRESHNESS_MS` | optional | YouTube staleness window in ms, default `180000`. See note below |
 
-`YT_FRESHNESS_MS` must exceed **2× the scheduler beat** (see step 5). With the
+`YT_FRESHNESS_MS` must exceed **2× the scheduler beat** (see step 7). With the
 1-minute beat, `180000` = 3 missed polls before the YouTube card falls back.
 
 ### 4. Install the Chrome extension (v2)
@@ -75,7 +75,7 @@ a 60s heartbeat so long videos keep refreshing the server-side timestamp).
 Pushes are failures-tolerant by design: the bot treats stale state as "not
 watching" and falls back to Spotify.
 
-#### Firefox install
+### 5. Install the Firefox add-on (v2)
 
 The same `extension/` folder works in Firefox as a temporary add-on:
 
@@ -83,7 +83,9 @@ The same `extension/` folder works in Firefox as a temporary add-on:
 2. Click **Load Temporary Add-on…** and select `extension/manifest.json`.
 
 No second config: Firefox loads the same `config.js`, so whatever `PUSH_URL` and
-`PUSH_SECRET` you already set for Chrome apply here too.
+`PUSH_SECRET` you already set for Chrome apply here too. If you edit `config.js`
+after loading, click **Reload** in `about:debugging` for the change to take
+effect.
 
 Honest caveat: a temporary add-on unloads when Firefox restarts, so re-load it to
 resume. If that gets annoying, the follow-up is signing the add-on via AMO
@@ -96,7 +98,7 @@ re-loaded.
 Troubleshooting: if YouTube cards stop appearing in Firefox unexpectedly, check
 `about:debugging` that the add-on is still loaded (a restart unloads it).
 
-### 5. Deploy
+### 6. Deploy
 
 ```bash
 npm install -g vercel   # if you don't already have it
@@ -106,7 +108,7 @@ vercel --prod
 
 Note your deployed production URL  -  you'll need it for the scheduler below.
 
-### 6. Set up the scheduler (IMPORTANT  -  read this)
+### 7. Set up the scheduler (IMPORTANT  -  read this)
 
 **Vercel's free Hobby plan only allows built-in Cron Jobs to run once per day.**
 Frequent polling needs Vercel Pro ($20/mo) if you use their native cron feature.
@@ -129,7 +131,7 @@ That's it  -  UptimeRobot will hit your endpoint every minute, your function
 fetches the latest track, parses it, and edits your pinned message. The 200
 response keeps your monitor green; any failure triggers an alert.
 
-### 7. (Optional) Health endpoint
+### 8. (Optional) Health endpoint
 
 The project also includes `/api/health`  -  a lightweight endpoint that returns
 `{ ok: true }` instantly with no external calls. You can set up a separate
