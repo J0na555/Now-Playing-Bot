@@ -154,6 +154,12 @@ The `dev` script loads environment from two files: `.env` first, then
 values in `.env` and machine-local secrets like `PUSH_SECRET` / `CRON_SECRET`
 in `.env.local`, which is git-ignored.
 
+A dev-only resolution hook (`scripts/ts-resolve-hook.mjs`, loaded with
+`--import`) makes Node 26's native type-stripping accept the extensionless
+relative imports in `api/` and `lib/`. The deployed source stays extensionless
+and CommonJS-style so Vercel's compiler still works; `npm run dev` runs the
+same files natively through the hook.
+
 Caveat: local runs hit the real Telegram API and the real Upstash database.
 Pointing a `curl` at `POST /api/push` will genuinely edit your pinned Telegram
 message. That's expected, not a bug - mirror what the deployed scheduler and
