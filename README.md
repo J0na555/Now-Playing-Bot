@@ -138,6 +138,30 @@ The project also includes `/api/health`  -  a lightweight endpoint that returns
 UptimeRobot monitor on this URL to track uptime independently of the Spotify
 and Telegram APIs.
 
+## Local development
+
+You can run the functions locally against your real environment, no Vercel CLI
+needed. `scripts/dev-server.mjs` spins up a small HTTP server (default
+`http://localhost:3000`, override with `PORT`) and runs the `.ts` handlers
+natively via Node's type stripping (Node 26+).
+
+```bash
+npm run dev
+```
+
+The `dev` script loads environment from two files: `.env` first, then
+`.env.local` on top (later flags win, so `.env.local` overrides). Put shared
+values in `.env` and machine-local secrets like `PUSH_SECRET` / `CRON_SECRET`
+in `.env.local`, which is git-ignored.
+
+Caveat: local runs hit the real Telegram API and the real Upstash database.
+Pointing a `curl` at `POST /api/push` will genuinely edit your pinned Telegram
+message. That's expected, not a bug - mirror what the deployed scheduler and
+extension do, but don't expect local runs to be side-effect free.
+
+Deploy-from-website flow is unchanged (step 6 above); this server only replaces
+`vercel dev` for local iteration.
+
 ## How it works
 
 ```
@@ -196,6 +220,8 @@ Curl it yourself with your monitor's auth header whenever the message looks wron
 - `lib/redis.ts`  -  v2. Upstash client and state keys (`np:yt:state`,
   `np:spotify:progress`).
 - `lib/telegram.ts`  -  wraps Telegram's `editMessageMedia` multipart upload.
+- `scripts/dev-server.mjs`  -  local dev server for the functions (see "Local
+  development"). Excluded from Vercel via `.vercelignore`.
 - `extension/`  -  v2. The Chrome MV3 extension (never deployed; excluded from
   Vercel via `.vercelignore` so `config.js` with `PUSH_SECRET` stays private).
 - `vercel.json`  -  sets a 10s max duration for the function. No cron block (see
