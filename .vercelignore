@@ -1,2 +1,4 @@
 # Never ship the extension — extension/config.js would expose PUSH_SECRET.
 extension/
+# Local dev tooling, not part of the deployed functions.
+scripts/
