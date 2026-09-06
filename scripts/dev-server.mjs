@@ -85,9 +85,9 @@ const server = http.createServer(async (nodeReq, nodeRes) => {
   const { pathname } = url;
 
   const routeToFile = {
-    "/api/health": "./api/health.ts",
-    "/api/poll": "./api/poll.ts",
-    "/api/push": "./api/push.ts",
+    "/api/health": "../api/health.ts",
+    "/api/poll": "../api/poll.ts",
+    "/api/push": "../api/push.ts",
   }[pathname];
 
   if (!routeToFile) {
