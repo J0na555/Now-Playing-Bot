@@ -68,6 +68,10 @@ under your Vercel project's **Settings → Environment Variables**:
    - `PUSH_SECRET` = any random string, must match `PUSH_SECRET` in Vercel above.
 4. Reload the extension after editing `config.js`.
 
+`extension/config.js` is local-only and ignored by git: it's created/edited by
+you, and since the deployed build excludes `extension/`, nothing server-side
+depends on it being tracked.
+
 The extension has no service worker and no backend  -  it's just a content script
 on YouTube pages that watches the page every 2s and POSTs
 `{ videoId, title, channel, paused }` to `/api/push` when something changes (plus
