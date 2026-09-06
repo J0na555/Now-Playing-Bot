@@ -5,7 +5,7 @@
 // so a browser-initiated POST only ever carries one of the allowlisted origins.
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { setYouTubeState } from "../lib/redis";
+import { setYouTubeState } from "../lib/redis.ts";
 
 const ALLOWED_ORIGINS = ["https://www.youtube.com", "https://m.youtube.com"];
 

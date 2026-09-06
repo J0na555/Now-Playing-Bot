@@ -5,15 +5,15 @@
 // video is not paused. Spotify wins while actively playing.
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { parseNowPlayingSvg, type NowPlayingData } from "../lib/svg-parser";
-import { editMessageMedia } from "../lib/telegram";
+import { parseNowPlayingSvg, type NowPlayingData } from "../lib/svg-parser.ts";
+import { editMessageMedia } from "../lib/telegram.ts";
 import {
   getSpotifyProgress,
   getYouTubeState,
   setSpotifyProgress,
   type YouTubeState,
-} from "../lib/redis";
-import { isSpotifyActive, spotifyCaption, youtubeCaption } from "../lib/cards";
+} from "../lib/redis.ts";
+import { isSpotifyActive, spotifyCaption, youtubeCaption } from "../lib/cards.ts";
 
 const YT_FRESHNESS_MS = Number(process.env.YT_FRESHNESS_MS) || 180000;
 
