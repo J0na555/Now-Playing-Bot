@@ -16,7 +16,23 @@ function createClient(): Redis | null {
   return Redis.fromEnv();
 }
 
-const redis = createClient();
+// Construction is deferred to first use and wrapped in try/catch. The env-var
+// guard above does not catch a malformed-but-present UPSTASH_REDIS_REST_URL —
+// Redis.fromEnv() throws (e.g. UrlError for a non-https URL) and an eager call
+// at module scope would 500 every route at import time. Any construction
+// failure degrades to the same "unavailable" result as missing env vars.
+let redisClient: Redis | null | undefined;
+
+function getRedis(): Redis | null {
+  if (redisClient !== undefined) return redisClient;
+  try {
+    redisClient = createClient();
+  } catch (err) {
+    console.warn("redis.ts: Upstash client unavailable, continuing without Redis:", err);
+    redisClient = null;
+  }
+  return redisClient;
+}
 
 export interface YouTubeState {
   videoId: string;
@@ -27,29 +43,33 @@ export interface YouTubeState {
 }
 
 export async function getYouTubeState(): Promise<YouTubeState | null> {
-  if (!redis) return null;
-  return redis.get<YouTubeState>(YT_STATE_KEY);
+  const client = getRedis();
+  if (!client) return null;
+  return client.get<YouTubeState>(YT_STATE_KEY);
 }
 
 export async function setYouTubeState(state: YouTubeState): Promise<void> {
-  if (!redis) {
+  const client = getRedis();
+  if (!client) {
     throw new Error(
       "Upstash Redis is not configured (UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN missing)"
     );
   }
-  await redis.set(YT_STATE_KEY, state, { ex: 3600 });
+  await client.set(YT_STATE_KEY, state, { ex: 3600 });
 }
 
 export async function getSpotifyProgress(): Promise<string | null> {
-  if (!redis) return null;
-  return redis.get<string>(SPOTIFY_PROGRESS_KEY);
+  const client = getRedis();
+  if (!client) return null;
+  return client.get<string>(SPOTIFY_PROGRESS_KEY);
 }
 
 export async function setSpotifyProgress(value: string): Promise<void> {
-  if (!redis) {
+  const client = getRedis();
+  if (!client) {
     throw new Error(
       "Upstash Redis is not configured (UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN missing)"
     );
   }
-  await redis.set(SPOTIFY_PROGRESS_KEY, value, { ex: 600 });
+  await client.set(SPOTIFY_PROGRESS_KEY, value, { ex: 600 });
 }
