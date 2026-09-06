@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/dev-server.mjs"
+    "dev": "node --import ./scripts/ts-resolve-hook.mjs --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/dev-server.mjs"
   },
   "devDependencies": {
     "@vercel/node": "^3.0.0",
