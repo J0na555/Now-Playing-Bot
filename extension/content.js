@@ -49,9 +49,20 @@ function push(snapshot) {
       Authorization: `Bearer ${secret}`,
     },
     body: JSON.stringify(snapshot),
-  }).catch((err) => {
-    console.warn("Now Playing: push failed (ignored by design):", err);
-  });
+  })
+    .then((res) => {
+      if (!res.ok) {
+        // A rejected request means a config problem (secret mismatch, wrong
+        // URL). Log the status so it is not a silent failure. No retry: the
+        // watch loop re-pushes on the next change anyway.
+        console.warn(
+          `Now Playing: push rejected with ${res.status} (check Push URL and secret in the options page)`,
+        );
+      }
+    })
+    .catch((err) => {
+      console.warn("Now Playing: push failed (ignored by design):", err);
+    });
 }
 
 // Watch loop: push only when the snapshot actually changed.
@@ -75,3 +86,11 @@ function startLoop() {
 
 // Load settings before starting the loop so pushes use the configured secret.
 loadSettings().finally(startLoop);
+
+// Re-load settings when the options page saves: without this, a YouTube tab
+// that was open before saving keeps the old (possibly empty) secret forever.
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && (changes.pushSecret || changes.pushUrl)) {
+    loadSettings().catch(() => {});
+  }
+});
