@@ -1,10 +1,3 @@
-// Dev-only resolve hook: retries extensionless relative/absolute specifiers
-// with .ts (then .mts/.cts) when Node's default resolver can't find them.
-// Lets the deployed source stay extensionless for Vercel's compiler while
-// `npm run dev` resolves the same imports natively.
-//
-// Usage: node --import ./scripts/ts-resolve-hook.mjs ...
-
 import { registerHooks } from "node:module";
 
 const EXTENSIONS = [".ts", ".mts", ".cts"];
@@ -27,7 +20,11 @@ registerHooks({
 });
 
 function isRelativeOrAbsolute(specifier) {
-  return specifier.startsWith(".") || specifier.startsWith("/") || specifier.startsWith("file:");
+  return (
+    specifier.startsWith(".") ||
+    specifier.startsWith("/") ||
+    specifier.startsWith("file:")
+  );
 }
 
 function hasExtension(specifier) {

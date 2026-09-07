@@ -1,17 +1,3 @@
-// Local dev server that mimics Vercel's Node runtime well enough to run the
-// api/*.ts handlers natively under Node's type stripping (Node 26+). The real
-// deployment still goes through Vercel/esbuild unchanged.
-//
-// Usage: node scripts/dev-server.mjs
-//   - route      -> handler file under api/
-//   - port       -> process.env.PORT || 3000
-//   - env files  -> provided by the `dev` npm script via --env-file-if-exists
-//
-// Handlers get a (req, res) pair shaped like @vercel/node's VercelRequest /
-// VercelResponse: req.method, req.headers (lowercased), req.url, req.body
-// (JSON body for POST with a JSON content-type, else undefined), and a
-// chainable res with status/json/setHeader/end/send.
-
 import http from "node:http";
 
 const PORT = process.env.PORT || 3000;
@@ -110,7 +96,9 @@ const server = http.createServer(async (nodeReq, nodeRes) => {
       nodeRes.statusCode = 500;
       nodeRes.setHeader("Content-Type", "application/json");
       nodeRes.end(
-        JSON.stringify({ error: err instanceof Error ? err.message : "Unknown error" })
+        JSON.stringify({
+          error: err instanceof Error ? err.message : "Unknown error",
+        }),
       );
     }
   }
@@ -118,5 +106,7 @@ const server = http.createServer(async (nodeReq, nodeRes) => {
 
 server.listen(PORT, () => {
   console.log(`dev server listening on http://localhost:${PORT}`);
-  console.log("env loading: .env + .env.local merged by the `dev` script (later flags override).");
+  console.log(
+    "env loading: .env + .env.local merged by the `dev` script (later flags override).",
+  );
 });
