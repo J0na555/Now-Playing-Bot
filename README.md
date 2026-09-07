@@ -62,15 +62,17 @@ under your Vercel project's **Settings → Environment Variables**:
 
 1. Open `chrome://extensions` and turn on **Developer mode**.
 2. Click **Load unpacked** and select the `extension/` folder in this repo.
-3. Edit `extension/config.js` first  -  it's the single place you configure:
-   - `PUSH_URL` = your deployed Vercel endpoint, e.g.
-     `https://your-project.vercel.app/api/push`
-   - `PUSH_SECRET` = any random string, must match `PUSH_SECRET` in Vercel above.
-4. Reload the extension after editing `config.js`.
+3. Open the extension's options page: click **Details** → **Extension options**
+   (or right-click the extension icon → Options) and set:
+   - **Push URL** = your deployed Vercel endpoint, e.g.
+     `https://your-project.vercel.app/api/push` (blank uses the default)
+   - **Push secret** = any random string, must match `PUSH_SECRET` in Vercel above.
+4. Click **Save**.
 
-`extension/config.js` is local-only and ignored by git: it's created/edited by
-you, and since the deployed build excludes `extension/`, nothing server-side
-depends on it being tracked.
+Settings live in `browser.storage.local`; the content script loads them on each
+page load and skips pushes until a secret is saved (the popup/badge shows
+nothing until then). `extension/config.js` is just a bootstrap module with safe
+defaults — no real secrets in the repo.
 
 The extension has no service worker and no backend  -  it's just a content script
 on YouTube pages that watches the page every 2s and POSTs
@@ -85,11 +87,12 @@ The same `extension/` folder works in Firefox as a temporary add-on:
 
 1. Open `about:debugging#/runtime/this-firefox`.
 2. Click **Load Temporary Add-on…** and select `extension/manifest.json`.
+3. Configure it the same way as Chrome: right-click the extension icon →
+   **Manage Extension** → **Preferences**, then enter the Push URL and secret.
 
-No second config: Firefox loads the same `config.js`, so whatever `PUSH_URL` and
-`PUSH_SECRET` you already set for Chrome apply here too. If you edit `config.js`
-after loading, click **Reload** in `about:debugging` for the change to take
-effect.
+No per-browser config: Firefox loads the same `config.js` bootstrap and reads
+the same `browser.storage.local` keys, so whatever you set in the options page
+applies in both.
 
 Honest caveat: a temporary add-on unloads when Firefox restarts, so re-load it to
 resume. If that gets annoying, the follow-up is signing the add-on via AMO
@@ -233,7 +236,7 @@ Curl it yourself with your monitor's auth header whenever the message looks wron
 - `scripts/dev-server.mjs`  -  local dev server for the functions (see "Local
   development"). Excluded from Vercel via `.vercelignore`.
 - `extension/`  -  v2. The Chrome MV3 extension (never deployed; excluded from
-  Vercel via `.vercelignore` so `config.js` with `PUSH_SECRET` stays private).
+  Vercel via `.vercelignore`; `config.js` is tracked but holds no secrets).
 - `vercel.json`  -  sets a 10s max duration for the function. No cron block (see
   step 6 above for why).
 

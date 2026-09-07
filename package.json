@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "node --import ./scripts/ts-resolve-hook.mjs --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/dev-server.mjs"
+    "dev": "node --import ./scripts/ts-resolve-hook.mjs --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/dev-server.mjs",
+    "build:extension": "python3 scripts/build-extension.py"
   },
   "devDependencies": {
     "@vercel/node": "^3.0.0",

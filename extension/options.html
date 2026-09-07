@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Now Playing — Options</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 480px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      color: #1a1a1a;
+    }
+    h1 { font-size: 1.25rem; margin-bottom: 1.5rem; }
+    label { display: block; margin-bottom: 1rem; font-weight: 600; }
+    label span { font-weight: 400; color: #666; }
+    input[type="text"], input[type="url"] {
+      display: block;
+      width: 100%;
+      margin-top: 0.25rem;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1.25rem;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.5; cursor: default; }
+    #status { margin-top: 0.75rem; font-size: 0.9rem; color: #1a7f37; }
+    #status.error { color: #cf222e; }
+  </style>
+</head>
+<body>
+  <h1>Now Playing — Options</h1>
+
+  <form id="optionsForm">
+    <label>
+      Push URL
+      <span>Where snapshots are sent. Leave blank for the default.</span>
+      <input type="url" id="pushUrl" name="pushUrl" />
+    </label>
+    <label>
+      Push secret
+      <span>Required. This authorizes pushes to your bot's API.</span>
+      <input type="text" id="pushSecret" name="pushSecret" autocomplete="off" />
+    </label>
+    <button type="submit">Save</button>
+    <p id="status" hidden></p>
+  </form>
+
+  <script src="options.js"></script>
+</body>
+</html>

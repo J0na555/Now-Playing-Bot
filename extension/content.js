@@ -1,14 +1,3 @@
-// Watches the YouTube page and POSTs the current watch state to PUSH_URL:
-//   { videoId, title, channel, paused }
-//
-// Failure is fine by design — the server treats stale state as inactive and the
-// pinned message falls back to Spotify. So pushes are best-effort: failures only
-// get a console.warn, never a crash.
-
-// ------------------------------------------------------------------
-// Selectors — YouTube's DOM drifts; treat these like the regexes in
-// lib/svg-parser.ts and update them when the watcher stops reporting.
-// ------------------------------------------------------------------
 const SELECTORS = {
   // Channel link on the watch page (owner row / channel name).
   channelLink: "a#owner-name, ytd-channel-name a",
@@ -46,15 +35,18 @@ function snapshotChanged(a, b) {
 }
 
 function push(snapshot) {
+  const secret = getPushSecret();
+  if (!secret) return; // not configured yet
+
   const now = Date.now();
   if (now - lastPushAt < MIN_PUSH_INTERVAL_MS) return;
   lastPushAt = now;
 
-  fetch(PUSH_URL, {
+  fetch(getPushUrl(), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${PUSH_SECRET}`,
+      Authorization: `Bearer ${secret}`,
     },
     body: JSON.stringify(snapshot),
   }).catch((err) => {
@@ -63,18 +55,23 @@ function push(snapshot) {
 }
 
 // Watch loop: push only when the snapshot actually changed.
-setInterval(() => {
-  const snapshot = currentSnapshot();
-  if (!snapshot) return;
-  if (!lastSnapshot || snapshotChanged(lastSnapshot, snapshot)) {
-    lastSnapshot = snapshot;
-    push(snapshot);
-  }
-}, WATCH_INTERVAL_MS);
+function startLoop() {
+  setInterval(() => {
+    const snapshot = currentSnapshot();
+    if (!snapshot) return;
+    if (!lastSnapshot || snapshotChanged(lastSnapshot, snapshot)) {
+      lastSnapshot = snapshot;
+      push(snapshot);
+    }
+  }, WATCH_INTERVAL_MS);
 
-// Heartbeat: re-POST the current snapshot so long videos keep refreshing the
-// server-side receivedAt (the poll treats state as stale after ~180s).
-setInterval(() => {
-  const snapshot = currentSnapshot();
-  if (snapshot) push(snapshot);
-}, HEARTBEAT_INTERVAL_MS);
+  // Heartbeat: re-POST the current snapshot so long videos keep refreshing the
+  // server-side receivedAt (the poll treats state as stale after ~180s).
+  setInterval(() => {
+    const snapshot = currentSnapshot();
+    if (snapshot) push(snapshot);
+  }, HEARTBEAT_INTERVAL_MS);
+}
+
+// Load settings before starting the loop so pushes use the configured secret.
+loadSettings().finally(startLoop);
