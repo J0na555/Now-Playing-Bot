@@ -83,7 +83,12 @@ watching" and falls back to Spotify.
 
 ### 5. Install the Firefox add-on (v2)
 
-The same `extension/` folder works in Firefox as a temporary add-on:
+Published on AMO: [Now Playing - youtube](https://addons.mozilla.org/addon/now-playing-youtube/).
+Install it from there and configure it the same way as Chrome: right-click the
+extension icon → **Manage Extension** → **Preferences**, then enter the Push URL
+and secret.
+
+For development, the same `extension/` folder works as a temporary add-on:
 
 1. Open `about:debugging#/runtime/this-firefox`.
 2. Click **Load Temporary Add-on…** and select `extension/manifest.json`.
@@ -95,15 +100,16 @@ the same `browser.storage.local` keys, so whatever you set in the options page
 applies in both.
 
 Honest caveat: a temporary add-on unloads when Firefox restarts, so re-load it to
-resume. If that gets annoying, the follow-up is signing the add-on via AMO
-(unlisted self-distribution), which isn't built here.
+resume. The AMO build doesn't have that problem — it stays loaded like any
+other installed add-on.
 
 Degradation is graceful: after a restart the YouTube state ages out in ~3 minutes
 and the card falls back to your last Spotify card until the extension is
 re-loaded.
 
 Troubleshooting: if YouTube cards stop appearing in Firefox unexpectedly, check
-`about:debugging` that the add-on is still loaded (a restart unloads it).
+`about:debugging` that the temporary add-on is still loaded (a restart unloads
+it; the AMO build stays loaded).
 
 ### 6. Deploy
 
@@ -235,8 +241,11 @@ Curl it yourself with your monitor's auth header whenever the message looks wron
 - `lib/telegram.ts`  -  wraps Telegram's `editMessageMedia` multipart upload.
 - `scripts/dev-server.mjs`  -  local dev server for the functions (see "Local
   development"). Excluded from Vercel via `.vercelignore`.
-- `extension/`  -  v2. The Chrome MV3 extension (never deployed; excluded from
-  Vercel via `.vercelignore`; `config.js` is tracked but holds no secrets).
+- `extension/`  -  v2. The cross-browser MV3 extension: load unpacked in Chrome,
+  load as a temporary add-on in Firefox, or install the published
+  [AMO build](https://addons.mozilla.org/addon/now-playing-youtube/). Never
+  deployed; excluded from Vercel via `.vercelignore`; `config.js` is tracked but
+  holds no secrets.
 - `vercel.json`  -  sets a 10s max duration for the function. No cron block (see
   step 6 above for why).
 
